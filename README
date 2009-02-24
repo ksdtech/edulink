@@ -1,0 +1,8 @@
+Using datamapper and sqlite3 as a temporary database, we:
+
+1. Download PowerSchool "autosend" staff and student files via SFTP
+2. Process the files using datamapper and sqlite3
+3. Upload the files in Edulink's format via SFTP
+
+Should run this as a cron job on a daily basis.  Autosend source
+files are posted daily.
