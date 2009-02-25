@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# Put this file in /etc/periodic/daily 
+# chown root:wheel 800.edulink
+# chmod 755 800.edulink
+
+export PATH=/opt/local/bin:/opt/local/sbin:$PATH
+cd /Users/Shared/edulink
+/Users/Shared/edulink/application.rb
