@@ -2,11 +2,13 @@
 
 require 'rubygems'
 require 'dm-core'
+require 'fastercsv'
+require 'fileutils'
+require 'net/sftp'
+
 require 'unquoted_csv'
 require 'employee'
 require 'student'
-require 'fileutils'
-require 'net/sftp'
 
 # app_config.rb holds private information
 require 'app_config'

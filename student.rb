@@ -6,7 +6,6 @@ PRIMARY_LANGUAGES = {
    '04'  =>  'Korean'    ,
    '05'  =>  'Tagalog'   ,
    '06'  =>  'Portuguese',
-   '07'  =>  'Mandarin'  ,
    '07'  =>  'Putonghua' ,
    '08'  =>  'Japanese'  ,
    '09'  =>  'Khmer'     ,
