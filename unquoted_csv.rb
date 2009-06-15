@@ -15,6 +15,12 @@ def int_convert(attrs, key)
   attrs[key] = attrs[key].to_i
 end
 
+VALID_EMAIL = /^[-_\.\+a-z0-9]+\@[-_\.a-z0-9]+\.[a-z]+$/
+def email_convert(attrs, key)
+  email = (attrs[key] || '').strip.downcase
+  attrs[key] = (email =~ VALID_EMAIL) ? email : nil
+end
+
 def list_convert(attrs, key)
 end
 

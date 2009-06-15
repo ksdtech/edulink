@@ -66,6 +66,18 @@ class Employee
 #  property :title, String, :length => 60 
 #  property :zip, String, :length => 15
   
+  # staffstatus == 1 is teacher
+  def fake_grade
+    case schoolid 
+    when 103
+      staffstatus == 1 ? 9 : 10
+    when 104
+      staffstatus == 1 ? 11 : 12
+    else
+      13
+    end
+  end
+  
   class << self
     def column_names
       @col_keys ||= properties.collect { |prop| prop.name }
@@ -75,17 +87,66 @@ class Employee
       column_names.include?(key.to_sym)
     end
   
+    # just add staff lines to student files
+    def append_edulink_files(fstaff='Student.txt', fdevice='StudentContactDevice.txt', coll=nil)
+      coll ||= all(:conditions => ["status=1 AND (cell<>'' OR home_phone<>'')"])
+
+      # Student.export_edulink_school_file(fschool)
+
+      # per Schoolwires, all employees should be in 'District' school
+      school_key = 'District'
+      fstaff = File.join(APP_ROOT, "data/edulink/#{fstaff}") unless fstaff[0, 1] == '/'
+      File.open(fstaff, "a") do |f|
+        # f.write %w{StudentKey SchoolKey FirstName MiddleName LastName Gender Grade HomeLanguage Status}.join(',')
+        # f.write "\r\n"
+        coll.each do |e|
+          # per Schoolwires, all employees should be in 'District' school
+          # school_key = e.schoolid == 103 ? 'Bacich' : (e.schoolid == 104 ? 'Kent' : 'District')
+          vals = ["E-#{e.teachernumber}", school_key, 
+              e.first_name, e.middle_name, e.last_name, (e.gender || '').upcase, e.fake_grade, 'English', 'ACTIVE']
+          f.write vals.collect { |val| (val || '').to_s.gsub(/,/, ' ') }.join(',')
+          f.write "\r\n"
+        end
+      end
+
+      fdevice = File.join(APP_ROOT, "data/edulink/#{fdevice}") unless fdevice[0, 1] == '/'
+      File.open(fdevice, "a") do |f|
+        # f.write %w{StudentKey SchoolKey DeviceType DeviceDescription DeviceAddress ContactOrder Language}.join(',')
+        # f.write "\r\n"
+        coll.each do |e|
+          i = 1
+          # per Schoolwires, all employees should be in 'District' school
+          # school_key = e.schoolid == 103 ? 'Bacich' : (e.schoolid == 104 ? 'Kent' : 'District')
+          if e.cell_ecall && !e.cell.blank?
+            vals = ["E-#{e.teachernumber}", school_key, 'PHONE', 'phone_1', e.cell, i, 'English']
+            f.write vals.collect { |val| (val || '').to_s.gsub(/,/, ' ') }.join(',')
+            f.write "\r\n"
+            i += 1
+          end
+          if e.home_phone_ecall && !e.home_phone.blank?
+            vals = ["E-#{e.teachernumber}", school_key, 'PHONE', 'phone_2', e.home_phone, i, 'English']
+            f.write vals.collect { |val| (val || '').to_s.gsub(/,/, ' ') }.join(',')
+            f.write "\r\n"
+            i += 1
+          end
+        end
+      end
+    end
+    
     def export_edulink_files(fschool='School.txt', fstaff='Staff.txt', fdevice='StaffContactDevice.txt', coll=nil)
       coll ||= all(:conditions => ["status=1 AND (cell<>'' OR home_phone<>'')"])
 
       # Student.export_edulink_school_file(fschool)
 
+      # per Schoolwires, all employees should be in 'District' school
+      school_key = 'District'
       fstaff = File.join(APP_ROOT, "data/edulink/#{fstaff}") unless fstaff[0, 1] == '/'
       File.open(fstaff, "w") do |f|
         f.write %w{StaffKey SchoolKey FirstName MiddleName LastName Gender Language}.join(',')
         f.write "\r\n"
         coll.each do |e|
-          school_key = e.schoolid == 103 ? 'Bacich' : (e.schoolid == 104 ? 'Kent' : 'District')
+          # per Schoolwires, all employees should be in 'District' school
+          # school_key = e.schoolid == 103 ? 'Bacich' : (e.schoolid == 104 ? 'Kent' : 'District')
           vals = ["E-#{e.teachernumber}", school_key, 
             e.first_name, e.middle_name, e.last_name, (e.gender || '').upcase, 'English']
           f.write vals.collect { |val| (val || '').to_s.gsub(/,/, ' ') }.join(',')
@@ -99,7 +160,8 @@ class Employee
         f.write "\r\n"
         coll.each do |e|
           i = 1
-          school_key = e.schoolid == 103 ? 'Bacich' : (e.schoolid == 104 ? 'Kent' : 'District')
+          # per Schoolwires, all employees should be in 'District' school
+          # school_key = e.schoolid == 103 ? 'Bacich' : (e.schoolid == 104 ? 'Kent' : 'District')
           if e.cell_ecall && !e.cell.blank?
             vals = ["E-#{e.teachernumber}", school_key, 'PHONE', 'cell', e.cell, i, 'English']
             f.write vals.collect { |val| (val || '').to_s.gsub(/,/, ' ') }.join(',')

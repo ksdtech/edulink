@@ -42,14 +42,14 @@ def download_files
 end
 
 def process_files
-  Employee.auto_migrate!
   Student.auto_migrate!
-
-  Employee.import_users("ps-staff.txt", false)
-  Employee.export_edulink_files
+  Employee.auto_migrate!
 
   Student.import_users("ps-students.txt", false)
   Student.export_edulink_files
+
+  Employee.import_users("ps-staff.txt", false)
+  Employee.append_edulink_files
 end
 
 def upload_files
