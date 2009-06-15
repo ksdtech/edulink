@@ -49,7 +49,7 @@ def process_files
   Student.export_edulink_files
 
   Employee.import_users("ps-staff.txt", false)
-  Employee.append_edulink_files
+  Employee.export_edulink_files
 end
 
 def upload_files
